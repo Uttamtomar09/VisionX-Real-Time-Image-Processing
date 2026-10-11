@@ -1,7 +1,8 @@
-from typing import Sequence
-
 import cv2
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+if face_cascade.empty():
+    print("error:Face detecion model not loaded!")
+    exit()
 cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 
@@ -22,7 +23,7 @@ while True:
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(frame, (15, 15), 0)
     edges = cv2.Canny(gray, 100, 200)
-    faces: Sequence[Sequence[int]] = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
@@ -49,8 +50,6 @@ while True:
         display = cv2.cvtColor(edges, cv2.COLOR_GRAY2BGR)
     elif mode == 5:
         display = frame.copy()
-        for (x, y, w, h) in faces:
-            cv2.rectangle(display, (x, y), (x + w, y + h), (255, 0, 0), 2)
             cv2.putText(display, "Face Detected", (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
 
     cv2.putText(display, "1: Original  2: Grayscale", (10, 30),
